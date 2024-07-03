@@ -2,7 +2,7 @@
 
 This repository contains the official implementation for "Explicitly Guided Information Interaction Network for Cross-modal Point Cloud Completion" (ECCV 2024) 
 
-**[Explicitly Guided Information Interaction Network for Cross-modal Point Cloud Completion](https://arxiv.org/abs/2307.08492), ECCV 2024**
+**[Explicitly Guided Information Interaction Network for Cross-modal Point Cloud Completion](), ECCV 2024**
 
 ## Introduction
 
