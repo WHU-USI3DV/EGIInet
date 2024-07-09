@@ -16,7 +16,7 @@
 # Output:
 # dist: [#batch, #points],  sqrt(dist) -> L2 distance 
 # assignment: [#batch, #points], index of the matched point in the ground truth point cloud
-# the result is an approximation and the assignment is not guranteed to be a bijection
+# the result is an approximation and the assignment is not guaranteed to be a bijection
 
 import time
 import numpy as np
