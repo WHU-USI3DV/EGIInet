@@ -10,21 +10,21 @@ from config_vipc import cfg
 
 class EGIInet(Module):
     def __init__(self, 
-                 embed_dim=cfg.EGIInet.embed_dim,
-                 depth=cfg.EGIInet.depth,
-                 img_patch_size=cfg.EGIInet.img_patch_size,
-                 pc_sample_rate=cfg.EGIInet.pc_sample_rate,
-                 pc_sample_scale=cfg.EGIInet.pc_sample_scale,
-                 fuse_layer_num=cfg.EGIInet.fuse_layer_num,
+                 embed_dim=cfg.NETWORK.EGIInet.embed_dim,
+                 depth=cfg.NETWORK.EGIInet.depth,
+                 img_patch_size=cfg.NETWORK.EGIInet.img_patch_size,
+                 pc_sample_rate=cfg.NETWORK.EGIInet.pc_sample_rate,
+                 pc_sample_scale=cfg.NETWORK.EGIInet.pc_sample_scale,
+                 fuse_layer_num=cfg.NETWORK.EGIInet.fuse_layer_num,
                  ):
         super().__init__()
         self.encoder=transfer_loss_shared_encoder(embed_dim=embed_dim,
                                                img_patch_size=img_patch_size,
                                                sample_ratio=pc_sample_rate,
                                                scale=pc_sample_scale,
-                                               block_head=cfg.shared_encoder.block_head,
+                                               block_head=cfg.NETWORK.shared_encoder.block_head,
                                                depth=depth,
-                                               pc_h_hidden_dim=cfg.shared_encoder.pc_h_hidden_dim,
+                                               pc_h_hidden_dim=cfg.NETWORK.shared_encoder.pc_h_hidden_dim,
                                                fuse_layer_num=fuse_layer_num,
                                                )
         self.decoder=Decoder_Network(K1=embed_dim,K2=embed_dim,N=embed_dim)
