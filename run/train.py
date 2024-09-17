@@ -82,7 +82,7 @@ def train_net(cfg):
         optimizer.param_groups[0]['lr']= cfg.TRAIN.LEARNING_RATE
         logging.info('Recover complete.')
 
-    print('recon_points: ',cfg.NETWORK.N_SAMPLING_POINTS, 'Parameters: ', sum(p.numel() for p in model.parameters()))
+    print('recon_points: ',cfg.DATASETS.SHAPENET.N_POINTS, 'Parameters: ', sum(p.numel() for p in model.parameters()))
     #exit()
     # Training/Testing the network
     for epoch_idx in range(init_epoch + 1, cfg.TRAIN.N_EPOCHS + 1):
