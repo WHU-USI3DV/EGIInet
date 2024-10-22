@@ -90,8 +90,8 @@ def train_net(cfg):
         model.train()
 
         total_cd_pc = 0
-        total_cd_p1 = 0
-        total_cd_p2 = 0
+        total_style = 0
+        total_loss = 0
 
         n_batches = len(train_data_loader)
         print('epoch: ', epoch_idx, 'optimizer: ', optimizer.param_groups[0]['lr'])
@@ -107,38 +107,39 @@ def train_net(cfg):
                 recon,style_loss=model(partial,png)
                 cd = chamfer_sqrt(recon,gt)
                 loss_total=cd+style_loss*1e-2
-                losses=[loss_total,cd,style_loss*1e-2]
+                optimizer.zero_grad()
+                loss_total.backward()
                 optimizer.step()
 
-                cd_pc_item = losses[0].item() * 1e3
+                cd_pc_item = cd.item() * 1e3
                 total_cd_pc += cd_pc_item
-                cd_p1_item = losses[1].item() * 1e3
-                total_cd_p1 += cd_p1_item
-                cd_p2_item = losses[2].item() * 1e3
-                total_cd_p2 += cd_p2_item
+                style_item = style_loss.item() * 1e1
+                total_style += style_item
+                loss_item = loss_total.item() * 1e3
+                total_loss += loss_item
                 n_itr = (epoch_idx - 1) * n_batches + batch_idx
                 train_writer.add_scalar('Loss/Batch/cd_pc', cd_pc_item, n_itr)
-                train_writer.add_scalar('Loss/Batch/cd_p1', cd_p1_item, n_itr)
-                train_writer.add_scalar('Loss/Batch/cd_p2', cd_p2_item, n_itr)
+                train_writer.add_scalar('Loss/Batch/style', style_item, n_itr)
+                train_writer.add_scalar('Loss/Batch/loss', loss_item, n_itr)
                 t.set_description(
                     '[Epoch %d/%d][Batch %d/%d]' % (epoch_idx, cfg.TRAIN.N_EPOCHS, batch_idx + 1, n_batches))
-                t.set_postfix(loss='%s' % ['%.4f' % l for l in [cd_pc_item, cd_p1_item, cd_p2_item]])
+                t.set_postfix(loss='%s' % ['%.4f' % l for l in [cd_pc_item, style_item, loss_item]])
                 if steps <= cfg.TRAIN.WARMUP_STEPS:
                     lr_scheduler.step()
                     steps += 1
 
         avg_cdc = total_cd_pc / n_batches
-        avg_cd1 = total_cd_p1 / n_batches
-        avg_cd2 = total_cd_p2 / n_batches
+        avg_style = total_style / n_batches
+        avg_loss = total_loss / n_batches
 
         lr_scheduler.step()
         train_writer.add_scalar('Loss/Epoch/cd_pc', avg_cdc, epoch_idx)
-        train_writer.add_scalar('Loss/Epoch/cd_p1', avg_cd1, epoch_idx)
-        train_writer.add_scalar('Loss/Epoch/cd_p2', avg_cd2, epoch_idx)
+        train_writer.add_scalar('Loss/Epoch/style', avg_style, epoch_idx)
+        train_writer.add_scalar('Loss/Epoch/loss', avg_loss, epoch_idx)
         logging.info(
                 '[Epoch %d/%d]  Losses = %s' %
                 (epoch_idx, cfg.TRAIN.N_EPOCHS,
-                 ['%.4f' % l for l in [avg_cdc, avg_cd1, avg_cd2]]))
+                 ['%.4f' % l for l in [avg_cdc, avg_style, avg_loss]]))
 
         # Validate the current model
         cd_eval = test_net(cfg, epoch_idx, val_data_loader, val_writer, model)
